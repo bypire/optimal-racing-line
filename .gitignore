@@ -2,3 +2,8 @@ __pycache__/
 *.pyc
 output/_*.log
 .DS_Store
+
+# LaTeX build artifacts
+report/*.log
+report/*.aux
+report/*.out
