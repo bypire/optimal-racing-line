@@ -1,0 +1,19 @@
+name: verify
+
+on: [push, pull_request]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      MPLBACKEND: Agg
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install numpy scipy matplotlib
+      - name: Analytic Jacobians vs finite difference
+        run: python solver/verify_jac.py
+      - name: Forward car (energy, steady corner, RK4 order)
+        run: python solver/verify_car.py

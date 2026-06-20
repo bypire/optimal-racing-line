@@ -26,6 +26,7 @@ def test_coasting():
     dy = np.abs(traj[:, 1]).max()               # should stay on the x-axis
     print(f"  [coasting]  max |v-v0| = {dv:.2e} m/s,  max |y| = {dy:.2e} m  "
           f"-> {'OK' if dv < 1e-9 and dy < 1e-9 else 'FAIL'}")
+    assert dv < 1e-9 and dy < 1e-9, "coasting should conserve speed and stay on axis"
 
 
 def circle_radius(traj):
@@ -52,6 +53,7 @@ def test_corner(mu=1.3, v=30.0, dt=0.002):
     err = abs(R_num - R_exact) / R_exact * 100
     print(f"  [corner]    v={v} m/s, mu={mu}: R_exact={R_exact:.3f} m, "
           f"R_num={R_num:.3f} m  ({err:+.3f}%)   grip used={car.grip_usage([0,a_n]):.2f}")
+    assert err < 1.0, "steady-corner radius must match v^2 = mu g R"
     return traj, R_exact
 
 
@@ -73,6 +75,7 @@ def test_rk4_order(v=30.0, mu=1.3):
     p = np.polyfit(np.log(dts), np.log(np.maximum(errs, 1e-16)), 1)[0]
     print(f"  [rk4 order] radius-error slope d(log e)/d(log dt) = {p:.2f}  "
           f"(expect ~4 for RK4)")
+    assert p > 3.5, "RK4 should show ~4th-order convergence"
     return dts, errs, p
 
 

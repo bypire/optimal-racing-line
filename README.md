@@ -1,5 +1,7 @@
 # Optimal Racing Line
 
+[![verify](https://github.com/bypire/optimal-racing-line/actions/workflows/verify.yml/badge.svg)](https://github.com/bypire/optimal-racing-line/actions/workflows/verify.yml)
+
 The fastest line around a circuit is computed as the solution of a minimum-lap-time optimal-control
 problem, rather than prescribed by hand. Given a track and a tyre-grip limit, the solver returns the
 controls that minimise lap time, and the resulting line is verified against closed-form optima. The
