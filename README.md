@@ -37,7 +37,7 @@ On a stylised 2.4 km circuit (mu = 1.5):
   the geometric centreline, a gain of 3.43 s (8.1 percent).
 - The car operates at the grip limit for close to the entire lap; the g-g diagram shows the
   trajectory saturating the friction circle.
-- The maximum defect is about 5e-11, so the trajectory satisfies the dynamics to machine precision.
+- The maximum defect is about 5e-11.
 
 ## Real-car physics on the same core
 
@@ -59,16 +59,14 @@ slow ones (`output/aero_envelope.png`).
 | Mesh convergence of lap time | converges | trapezoidal, order `ds^2` |
 | Friction-circle saturation | about 100 percent at the limit | optimal control rides the limit |
 
-Tight defects alone only show that the NLP satisfied its own constraints, so the lap time is also
-checked against the closed-form skidpad optimum, a constant-radius lap the model cannot improve on,
-and shown to converge under mesh refinement.
+The lap time is checked against the closed-form skidpad optimum, and converges under mesh
+refinement.
 
 ## Sensitivity as a design tool
 
 Because the solve is inexpensive and warm-starts across parameters, re-solving the lap while
 sweeping a parameter turns the model into a trade study (`output/sensitivity.png`): lap time against
-grip, against engine power, and against downforce. This is the practical use of trajectory
-optimisation, answering how much a given change is worth rather than drawing a single line.
+grip, against engine power, and against downforce.
 
 ## How to run
 
@@ -85,12 +83,10 @@ a speed-coloured line and a live g-g dot. The data is injected, so no server is 
 
 ## Method notes and limitations
 
-The point mass on a friction circle is a deliberate baseline: every term in the dynamics and every
-entry in the Jacobian is hand-checkable. It has no load transfer or yaw dynamics. The natural next
+The point mass on a friction circle is a deliberate baseline. It has no load transfer or yaw dynamics. The natural next
 step is the single-track (bicycle) model with a combined-slip tyre, which would warm-start from this
 solution. SLSQP is a dense sequential-quadratic-programming method and does not scale past roughly
-250 nodes; a finer mesh calls for an interior-point solver (such as IPOPT) that exploits sparsity,
-and the transcription and analytic Jacobians built here are exactly what such a solver requires.
+250 nodes; a finer mesh calls for an interior-point solver (such as IPOPT) that exploits sparsity.
 Variable scaling, a quasi-steady-state warm start, and mesh continuation are what make the
 closed-circuit NLP converge cleanly.
 

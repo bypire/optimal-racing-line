@@ -63,14 +63,13 @@
   optimal-control problem rather than drawing it by hand, and verify the result against
   closed-form optima. The goal is a trajectory-optimisation solver, built from the vehicle model
   up, in which the racing line emerges from the tyre-grip limit and the lap time is checked
-  against analytical references. The point mass on a friction circle is a deliberate baseline so
-  that every term in the dynamics and every entry in the Jacobian is hand-checkable.\vspace{3pt}}}
+  against analytical references. The point mass on a friction circle is a deliberate baseline.\vspace{3pt}}}
 
 \vspace{1.0em}
 
 \begin{abstract}
 \noindent
-The racing line is not drawn, it is computed. Given a track and a tyre-grip limit, the fastest way
+Given a track and a tyre-grip limit, the fastest way
 round is the solution of a minimum-lap-time optimal-control problem: find the controls (how to
 brake, turn, and accelerate) that minimise the time to traverse a fixed arc length, subject to the
 vehicle dynamics and the friction limit. This report formulates that problem, removes its free
@@ -89,8 +88,7 @@ A lap time is a functional of how the car is driven. Minimising it is a free-fin
 optimal-control problem: the final time is the quantity to minimise, which makes the time horizon
 itself an unknown. The standard reformulation removes this difficulty by changing the independent
 variable from time $t$ to arc length $s$ along the track centreline. The finish is then a fixed
-boundary, $s=L$, and the lap time becomes a definite integral to minimise. This is the central
-modelling decision and the reason the problem is tractable. The vehicle model is a baseline by
+boundary, $s=L$, and the lap time becomes a definite integral to minimise. The vehicle model is a baseline by
 choice: the single-track (bicycle) model is the natural next layer and would warm-start from this
 solution.
 
@@ -137,10 +135,10 @@ and the periodic constraint couples the whole lap. Three ingredients make it con
 variable scaling to dimensionless decision variables; a quasi-steady-state warm start (the
 $g$--$g$-limited speed profile on the centreline, $v=\sqrt{a_\text{max}/|\kappa|}$ with a forward
 acceleration pass and a backward braking pass, so the NLP only has to find the line); and mesh
-continuation. Together these turned the solve from a failed return into a clean optimum.
+continuation.
 
 % ---------------------------------------------------------------------------
-\section{Verification: the solution is correct, not just feasible}
+\section{Verification}
 % ---------------------------------------------------------------------------
 Tight defects alone only prove the NLP satisfied its own constraints. Correctness is established
 against independent references at two levels, the forward model and the optimiser
@@ -166,9 +164,9 @@ against independent references at two levels, the forward model and the optimise
 \end{table}
 
 The two non-trivial checks: the analytic Jacobians match finite differences to better than
-$1.2\times10^{-6}$, so the gradients the solver trusts are right; and the converged lap time
-matches the closed-form skidpad optimum $T=2\pi\sqrt{R/\mu g}$, a constant-radius lap the model
-cannot cheat, to $-0.2\,\%$, with the residual explained by the finite track width. Mesh
+$1.2\times10^{-6}$; and the converged lap time
+matches the closed-form skidpad optimum $T=2\pi\sqrt{R/\mu g}$ to $-0.2\,\%$, with the residual
+explained by the finite track width. Mesh
 refinement confirms the trapezoidal $\mathcal{O}(\Delta s^2)$ convergence.
 
 \begin{figure}[h]
@@ -190,10 +188,10 @@ refinement confirms the trapezoidal $\mathcal{O}(\Delta s^2)$ convergence.
 % ---------------------------------------------------------------------------
 On a stylised 2.4\,km Grand Circuit ($\mu = 1.5$), the optimal lap is 38.76\,s, against 42.19\,s
 for the same car constrained to the geometric centreline. The optimal racing line is therefore
-3.43\,s (8.1\,\%) faster, which is the whole value of a racing line. The maximum defect is about
-$5\times10^{-11}$: the trajectory satisfies the dynamics to machine precision.
+3.43\,s (8.1\,\%) faster. The maximum defect is about
+$5\times10^{-11}$.
 
-Nothing about the line's shape was imposed. From minimising time under
+From minimising time under
 Eqs.~\eqref{eq:friction}--\eqref{eq:dyn} alone, the solver finds that the fast way round is to
 brake in a straight line, use the full track width to straighten the corner (a larger effective
 radius buys a higher apex speed), trail-brake to a late apex, and get back to power on exit. The
@@ -205,8 +203,7 @@ sitting on it for nearly the whole lap, which is the signature of a time-optimal
   \includegraphics[width=0.95\textwidth]{the_lap.png}
   \caption{The optimal lap. Left: the racing line coloured by speed, straightening the corners
   against the centreline. Middle: the $g$--$g$ diagram saturating the friction circle. Right: the
-  speed profile (brake, apex, accelerate). The line is the output of the optimisation, not an
-  input.}
+  speed profile (brake, apex, accelerate).}
   \label{fig:lap}
 \end{figure}
 
@@ -221,8 +218,7 @@ makes the grip limit grow with speed,
   a_\text{grip}(v) = \mu\big(g + \tfrac12\rho C_l A\,v^2/m\big).
 \end{equation}
 The $g$--$g$ circle then becomes a speed-dependent performance envelope (Fig.~\ref{fig:aero}): fast
-corners pull more $g$ than slow ones (up to $4.7g$ at $310\,\mathrm{km/h}$), which is the defining
-feature of a real race car.
+corners pull more $g$ than slow ones (up to $4.7g$ at $310\,\mathrm{km/h}$).
 
 % ---------------------------------------------------------------------------
 \section{The optimiser as a design tool}
@@ -230,8 +226,7 @@ feature of a real race car.
 Because the solve is cheap and warm-starts across parameters, re-solving the lap while sweeping a
 parameter turns the model into a trade study (Fig.~\ref{fig:aero}, right): lap time versus grip
 (wet to slicks), versus power (diminishing returns), and versus downforce
-($40.8\,$s to $27.7\,$s across the swept range). This is what dynamic optimisation is for:
-answering ``how much does $+X$ buy'' quantitatively, not drawing a line.
+($40.8\,$s to $27.7\,$s across the swept range).
 
 \begin{figure}[h]
   \centering
@@ -256,8 +251,7 @@ answering ``how much does $+X$ buy'' quantitatively, not drawing a line.
   \item The natural next layer is the single-track (bicycle) model with a combined-slip tyre,
         which would warm-start directly from this solution.
   \item SLSQP is a dense SQP and does not scale past $N\!\sim\!250$ nodes; for much finer meshes an
-        interior-point solver (IPOPT) exploiting sparsity is the right tool, and the transcription
-        and analytic Jacobians built here are exactly what it needs.
+        interior-point solver (IPOPT) exploiting sparsity is the right tool.
 \end{itemize}
 
 % ---------------------------------------------------------------------------
